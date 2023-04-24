@@ -1,0 +1,1 @@
+# A Simple Machine Learning algorithm to predict the outcome of NFL games

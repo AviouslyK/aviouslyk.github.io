@@ -8,3 +8,4 @@
 
 ## Work Samples
 - [BoostNFL](work_samples/boostnfl.md)
+- [UnityChess](work_samples/chess.md)

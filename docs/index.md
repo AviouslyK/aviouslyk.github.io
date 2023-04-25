@@ -1,6 +1,8 @@
-<img align="left" width="200" src="images/headshot.png">
+
 
 # Abraham Kahn's Homepage 
+
+<img align="right" width="150" src="images/headshot.png">
 
 ## Work Samples
 - [BoostNFL](work_samples/boostnfl.md)

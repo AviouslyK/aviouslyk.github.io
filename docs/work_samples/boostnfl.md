@@ -16,7 +16,7 @@ Let's find out.
 # Building the model
 
 ## Obtaining and Cleaning the data
-The first thing needed is a public dataset of all NFL games, with the teams, outcomes, and any other useful features. Thankfully, I found one online at http://www.habitatring.com/games.csv, which has data from 1999 to the present, and is updated regularly.
+The first thing needed is a public dataset of all NFL games, with the teams, outcomes, and any other useful features. Thankfully, I found one online at [http://www.habitatring.com/games.csv](http://www.habitatring.com/games.csv), which has data from 1999 to the present, and is updated regularly.
 
 To begin, we can use **pandas** to read in all the data from the website and put it into a DataFrame. We make two copies of the data, one will end up as our training data, and the other will be our testing/validation data. 
 

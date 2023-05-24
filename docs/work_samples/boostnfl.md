@@ -74,7 +74,7 @@ X_train_full, X_valid_full, y_train, y_valid = train_test_split(X_full, y, train
 
 Finally, the last step of data cleaning we need to do, is to convert any categorical data into numerical. Here I chose to one-hot encode the data. As an example this would convert 
 
-| Color | Val |
+| color | val |
 |-------|-----|
 | red   | 14  |
 | blue  | 22  |
@@ -142,3 +142,23 @@ Number of Test Examples = 1327
 
 ['game_type', 'gameday', 'weekday', 'gametime', 'away_team', 'home_team', 'location', 'nfl_detail_id', 'roof', 'surface', 'away_qb_id', 'home_qb_id', 'away_qb_name', 'home_qb_name', 'away_coach', 'home_coach', 'referee', 'stadium_id', 'stadium', 'season', 'week', 'overtime', 'old_game_id', 'gsis', 'pff', 'espn', 'away_rest', 'home_rest', 'away_moneyline', 'home_moneyline', 'spread_line', 'away_spread_odds', 'home_spread_odds', 'total_line', 'under_odds', 'over_odds', 'div_game', 'temp']
 ```
+
+One of the most important parts of building a model is feature engineering, and as you can see we have a lot of features here. To make our lives easier later, as one last data cleaning step, let's remove all of the redundant columns we see here. So before we make the validation set, we can add
+
+```python
+# Remove redundant or not useful features, mostly IDs
+X_full.drop(['game_id'], axis=1, inplace=True) 
+X_full.drop(['old_game_id'], axis=1, inplace=True) 
+X_full.drop(['pff'], axis=1, inplace=True) 
+X_full.drop(['gsis'], axis=1, inplace=True) 
+X_full.drop(['pfr'], axis=1, inplace=True) 
+X_full.drop(['espn'], axis=1, inplace=True) 
+X_full.drop(['stadium_id'], axis=1, inplace=True) # already have the name
+X_full.drop(['away_qb_id'], axis=1, inplace=True) # already have their name
+X_full.drop(['home_qb_id'], axis=1, inplace=True) 
+X_full.drop(['nfl_detail_id'], axis=1, inplace=True)
+```
+
+Now to move on to the more fun part, defining and training the machine learning model!
+
+## Defining and Training the Model

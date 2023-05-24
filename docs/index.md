@@ -7,5 +7,6 @@
 # Site Under Construction
 
 ## Work Samples
-- [BoostNFL](work_samples/boostnfl.md)
-- [UnityChess](work_samples/chess.md)
+- [BoostNFL (python, Machine Learning)](work_samples/boostnfl.md)
+- [Chess (Unity, C#)](work_samples/chess.md)
+- [WeigthDatabase (SQL, python)](work_samples/weight_sql.md)

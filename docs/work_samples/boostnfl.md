@@ -33,7 +33,7 @@ X_test_full = pd.read_csv("http://www.habitatring.com/games.csv")
 
 Now we separate out our Training and Validation Data, from our testing data. To start with, let's train and validate on all NFL games played before the 2019 season, Then we can test our performance on games played during and after 2019. 
 
-To keep thing simple, let's also only consider regular season games - any NFL fan knows that _anything_ can happen in the playoffs, and we don't want to confuse are model!
+To keep thing simple, let's also only consider regular season games - any NFL fan knows that _anything_ can happen in the playoffs, and we don't want to confuse our model!
 
 
 ```python 
@@ -162,3 +162,30 @@ X_full.drop(['nfl_detail_id'], axis=1, inplace=True)
 Now to move on to the more fun part, defining and training the machine learning model!
 
 ## Defining and Training the Model
+
+We can use a gradient boosting algorithm to train the model, called XGBoost. In short, it combines several weaker models 
+into one stronger ensemble model. It works iteratively, calculating how close its predictions were to data, and creating and adding trees to the model to minimize this _loss_. We need to define some parameters that control how the model will learn.
+
+```python
+from xgboost import XGBRegressor
+
+# Define the model
+model = XGBRegressor(n_estimators=100, learning_rate=0.025,  early_stopping_rounds=4, max_depth=3, subsample=0.85)
+```
+
+Here, `n_estimators` is the number of boosted trees that make up our ensemble. `learning_rate` controls the weighting of new trees added to the model, and can be set low to prevent over-fitting. `early_stopping_rounds` sets when to stop iterating if the performance hasn't improved, so in this example after 4 iterations of no decrease in the loss, we will stop adding trees to the model. This will also prevent over-fitting. 
+
+`max_depth` controls the maximum depth of each tree in the model. The larger the depth, the more complex the model, and also the more likely it will overfit. Lastly, `subsample` also prevents over-fitting, here it tells XGBoost to randomly sample 85% of the training data for each iteration of the boosting process. This leads to faster training, and can also improve performance as by introducing some randomness so that the model becomes less likely to fit noise and focuses on more meaningful patterns.
+
+Now we are ready to train the model! We use out previously partitioned out training data, and evaluate it's performance using the validation data. Then we can calculate it's predictions, and measure it's performance.
+
+```python
+# Fit the model
+model.fit(X_train, y_train, eval_set=[(X_valid, y_valid)], verbose=False)
+# Get predictions
+preds = model.predict(X_valid)
+print('MAE:', mean_absolute_error(y_valid, preds))
+print('MSE:', mean_squared_error(y_valid, preds))
+```
+
+Here we print out the mean absolute error and the mean squared error, to common performance metrics

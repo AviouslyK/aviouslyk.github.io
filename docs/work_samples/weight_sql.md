@@ -7,7 +7,7 @@ This was a personal project I embarked on to get more familiar with SQL. For a l
 Because I'm on a macOS I can't natively support Microsoft programs, I need to download and install Docker [(https://www.docker.com)](https://www.docker.com) first.
 Next I'll install Azure Data Studio [(https://azure.microsoft.com/en-us/products/data-studio)](https://azure.microsoft.com/en-us/products/data-studio) to manage the server. 
 
-Now that all the prequisistes are out of the way, let's being. We first use Docker to pull a Microsoft hosted Docker image azure-sql-edge. So in the terminal execute
+Now that all the prerequisites are out of the way, let's begin. We first use Docker to pull a Microsoft hosted Docker image azure-sql-edge. So in the terminal execute
 
 ```bash
 docker pull mcr.microsoft.com/azure-sql-edge
@@ -99,8 +99,8 @@ server = 'localhost'
 database = 'weight_db'
 username = 'sa'
 password = '!charmstrange!'
-driver = '/usr/local/lib/libmsodbcsql.17.dylib'
-# driver = 'ODBC Driver 17 for SQL Server' # sym link not working, I need to put actual path
+# driver = 'ODBC Driver 17 for SQL Server' # usually this is ok
+driver = '/usr/local/lib/libmsodbcsql.17.dylib' # but I had to do this
 cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
 cursor = cnxn.cursor()
 

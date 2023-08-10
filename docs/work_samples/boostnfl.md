@@ -233,7 +233,7 @@ fig.savefig("feat_import.png")
 plt.show()
 ```
 
-<img width="550" src="../images/feat_import.png">
+<img width="550" src="../images/Feat_import.png">
 
 Uh oh! It looks like whether or not the game went to overtime is the second most important feature in the model. This should have been dropped from the data in the beginning, when we dropped  other features directly related to the target. Of course the model will learn that if a game went to overtime, the scores must have been close together, but this won't help it predict future outcomes, since it's unknown whether those games will go to overtime or not. So we add
 

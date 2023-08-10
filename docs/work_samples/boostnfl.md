@@ -177,7 +177,7 @@ Here, `n_estimators` is the number of boosted trees that make up our ensemble. `
 
 `max_depth` controls the maximum depth of each tree in the model. The larger the depth, the more complex the model, and also the more likely it will overfit. Lastly, `subsample` also prevents over-fitting, here it tells XGBoost to randomly sample 85% of the training data for each iteration of the boosting process. This leads to faster training, and can also improve performance as by introducing some randomness so that the model becomes less likely to fit noise and focuses on more meaningful patterns.
 
-Now we are ready to train the model! We use out previously partitioned out training data, and evaluate it's performance using the validation data. Then we can calculate it's predictions, and measure it's performance.
+Now we are ready to train the model! We use out previously partitioned out training data, and evaluate it's performance using the validation data. 
 
 ```python
 # Fit the model
@@ -188,4 +188,61 @@ print('MAE:', mean_absolute_error(y_valid, preds))
 print('MSE:', mean_squared_error(y_valid, preds))
 ```
 
-Here we print out the mean absolute error and the mean squared error, to common performance metrics
+Here we print out the mean absolute error and the mean squared error, two common performance metrics.
+
+In this case, we find that 
+```
+MAE: 10.57
+MSE: 180.40
+```
+
+So on average, the model's prediction of the result of the game (home score - away score) on validation data, was off by about 10-11 points.
+
+If instead we took the difference in predicted and truth, squared it, and _then_ took the average, we would end up with 180.4
+
+For more fun, we can try and tune our parameters to see if we can improve the performance. For now though, let's make predictions on our test data - games from 2019 onwards - and see how we do:
+
+```python
+# Predict Test Data
+df_total = pd.concat([y_test, X_test_OG], axis=1)
+df_total["Pred"] = model.predict(X_test)
+df_total.Pred = df_total.Pred.round()
+
+df_total = df_total[ ['Pred'] + [ col for col in df_total.columns if col != 'Pred' ] ]
+df_total.to_csv('boosted_prediction.csv')
+
+# Plot prediction vs actual 
+df_total["Game"] = df_total.index
+df_total["Model-Real"] = df_total["Pred"] - df_total["result"]
+plot = df_total.plot(x="Game",y="Model-Real")
+fig = plot.get_figure()
+fig.savefig("boosted_output2.png")
+```
+
+<img width="550" src="../images/model_minus_real.png">
+
+The plot is consistent with an average of 10-11 points from the true value, but occasionally is off by even more.
+
+One useful thing to do would be to plot the feature importance, to see what is having the largest affect on our model.
+
+```python
+# Investigate Feature Importance
+g = plot_importance(model, importance_type='weight', max_num_features=4)
+fig = g.get_figure()
+fig.savefig("feat_import.png")
+plt.show()
+```
+
+<img width="550" src="../images/feat_import.png">
+
+Uh oh! It looks like whether or not the game went to overtime is the second most important feature in the model. This should have been dropped from the data in the beginning, when we dropped  other features directly related to the target. Of course the model will learn that if a game went to overtime, the scores must have been close together, but this won't help it predict future outcomes, since it's unknown whether those games will go to overtime or not. So we add
+
+```python
+X_full.drop(['overtime'], axis=1, inplace=True) 
+```
+
+and run again. 
+
+<img width="550" src="../images/feat2.png">
+
+Ah this makes more sense. The features with the biggest impact on our model are those associated with vegas score predictions, as we might expect.

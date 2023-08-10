@@ -1,9 +1,9 @@
 
 
-# Abraham Kahn's Homepage 
 
 <img align="right" width="150" src="images/headshot.png">
 
+# Abraham Kahn's Homepage 
 
 ## Work Samples
 - [BoostNFL (python, Machine Learning)](work_samples/boostnfl.md)

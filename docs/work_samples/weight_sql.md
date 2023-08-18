@@ -185,3 +185,78 @@ cnxn.commit()
 Where we had to be careful to only calculate the average from days of the week that had a weight in them, and make sure we didn't divide by zero. 
 
 <img width="550" src="../images/avg.png">
+
+Now looking at this table, it is a bit silly the way it's organized. The day of the week could just be found from the date. So why don't we make a new TABLE with more useful formatting.
+
+```python
+import pyodbc
+import pandas as pd
+import math
+from datetime import datetime, timedelta
+
+server = 'localhost'
+database = 'weight_db'
+username = 'sa'
+password = '!charmstrange!'
+driver = '/usr/local/lib/libmsodbcsql.17.dylib'
+# driver = 'ODBC Driver 17 for SQL Server' # sym link not working, I need to put actual path
+cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
+cursor = cnxn.cursor()
+
+# Read the Excel file using pandas
+excel_file_path = 'flatWeight.xlsx'
+df = pd.read_excel(excel_file_path, index_col=0) 
+
+cursor.execute("CREATE TABLE ReformattedWeight (Week INT, Date DATE PRIMARY KEY, Weight DECIMAL)")
+
+# I didn't put the year in the data originally, but I know it begins in 2022
+# I'll increment it after I see january
+current_year = 2022
+changed_year = False
+
+# How many weeks
+week_counter = 0
+
+for index, row in df.iterrows():
+    week = index
+    values = row.values[:]  # Extracting weight values from Monday to Sunday
+    avg_weight = row.values[-1]  # The last value is the average weight
+    
+    # Getting the date of each day from the week string
+    week_parts = week.split(' ')
+    if week_parts[0] == 'Jan' and week_parts[1] == '2' and not changed_year:
+        current_year = current_year + 1
+        changed_year = True # only do this twice
+
+    start_date = week_parts[0] + ' ' + week_parts[1] + ' ' + str(current_year)
+    
+    # Try different format specifiers for parsing month names (Jun vs June)
+    for format_specifier in ['%B %d %Y', '%b %d %Y']:
+        try:
+            # Attempt to parse the date using the current format specifier
+            start_date = datetime.strptime(start_date, format_specifier)
+            break  # Break out of the loop if parsing succeeds
+        except ValueError:
+            continue  # Try the next format specifier if parsing fails
+
+    # Inserting data into the ReformattedWeight table
+    for i, value in enumerate(values):
+        # Adding i days to the start of the week, to get the date of each workout
+        days_to_add = i
+        new_date = start_date + timedelta(days=days_to_add)
+
+        # handle empty cells
+        value = convert_empty_to_none(value)
+
+        cursor.execute("INSERT INTO ReformattedWeight (Week, Date, Weight) VALUES (?, ?, ?)", (week_counter, new_date, value))
+
+    week_counter = week_counter + 1
+    
+# Committing the changes and closing the connection
+cnxn.commit()
+cnxn.close()
+```
+
+Here we can use the data of each weight entry as the `PRIMARY KEY`. Much better
+
+<img width="550" src="../images/formatted.png">

@@ -115,3 +115,73 @@ $ python populate.py
 ```
 
 This was also a nice test of inserting a week of weight measurements where one day's data was missing.
+
+But of course, we don't want to manually insert the data by hand, instead let's read in the data from an excel file, and then add it to our table.
+
+```python
+# For handling empty cells
+def convert_empty_to_none(value):
+    if isinstance(value, float) and math.isnan(value):
+        return None
+    return value
+
+# Read the Excel file using pandas
+excel_file_path = 'flatWeight.xlsx'
+df = pd.read_excel(excel_file_path, index_col=0) 
+
+# From df to db
+for index, row in df.iterrows():
+    week = index
+    mon, tue, wed, thur, fri, sat, sun = map(convert_empty_to_none, row.values)
+
+    # Insert weights into the table
+    cursor.execute('INSERT INTO Weight (Week, MON, TUE, WED, THUR, FRI, SAT, SUN) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                   week, mon, tue, wed, thur, fri, sat, sun)
+    cnxn.commit()  # Commit changes for each week
+
+cursor.close()
+cnxn.close()
+```
+
+Note, we had to add a function to convert all of our empty cells to a `None` value, so that we don't get an error from our SQL server like "The supplied value is not a valid instance of data type float."
+
+Now we have all of the data that used to be in excel saved in our database! We can do a simple query and look at the first few entries 
+
+<img width="550" src="../images/first_entries.png">
+
+Now to add a new column to our table that contains the average weight of that week, we can run
+
+```python
+# Add a new column "Avg" to the SQL table
+alter_query = '''
+ALTER TABLE Weight
+ADD Avg DECIMAL;
+'''
+cursor.execute(alter_query)
+cnxn.commit()
+
+# Calculate and update the average weight for each week
+update_query = '''
+UPDATE Weight
+SET Avg = (
+    (ISNULL(MON, 0) + ISNULL(TUE, 0) + ISNULL(WED, 0) + ISNULL(THUR, 0) +
+    ISNULL(FRI, 0) + ISNULL(SAT, 0) + ISNULL(SUN, 0))
+    /
+    (CASE WHEN MON IS NOT NULL THEN 1 ELSE 0 END +
+    CASE WHEN TUE IS NOT NULL THEN 1 ELSE 0 END +
+    CASE WHEN WED IS NOT NULL THEN 1 ELSE 0 END +
+    CASE WHEN THUR IS NOT NULL THEN 1 ELSE 0 END +
+    CASE WHEN FRI IS NOT NULL THEN 1 ELSE 0 END +
+    CASE WHEN SAT IS NOT NULL THEN 1 ELSE 0 END +
+    CASE WHEN SUN IS NOT NULL THEN 1 ELSE 0 END)
+)
+WHERE MON IS NOT NULL OR TUE IS NOT NULL OR WED IS NOT NULL OR
+      THUR IS NOT NULL OR FRI IS NOT NULL OR SAT IS NOT NULL OR SUN IS NOT NULL;
+'''
+# add where clause at end to ensure we don't do this when all the columns are null
+cursor.execute(update_query)
+cnxn.commit()
+```
+Where we had to be careful to only calculate the average from days of the week that had a weight in them, and make sure we didn't divide by zero. 
+
+<img width="550" src="../images/avg.png">

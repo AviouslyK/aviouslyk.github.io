@@ -5,9 +5,8 @@ const outputArea = document.getElementById("outputArea");
 guessButton.addEventListener("click", () => {
     const guess = guessInput.value;
     
-    // Send the guess to the server using AJAX or fetch
-    // Replace 'SERVER_URL' with the actual URL of your server
-    const SERVER_URL = 'http://localhost:5000';  // Change port if needed
+    // Send the guess to the server using fetch
+    const SERVER_URL = 'http://3.142.189.233';  // AWS EC2 instance I've set up
 
 guessButton.addEventListener("click", () => {
     const guess = guessInput.value;

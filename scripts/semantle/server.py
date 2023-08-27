@@ -6,6 +6,10 @@ app = Flask(__name__)
 CORS(app) # allow requests from github website domain to access resources from this server
 correlator = WordCorrelator()  # Initialize the WordCorrelator instance
 
+@app.route('/')
+def index():
+    return "Welcome to the Word Guessing App!"
+    
 @app.route('/process_guess', methods=['POST'])
 def process_guess():
     data = request.get_json()  # Get the JSON data from the request
@@ -22,5 +26,5 @@ def process_guess():
     return jsonify(response_data)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080) 
+    app.run(host='0.0.0.0', port=5000) 
 

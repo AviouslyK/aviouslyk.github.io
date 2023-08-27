@@ -6,7 +6,7 @@ guessButton.addEventListener("click", () => {
     const guess = guessInput.value;
     
     // Send the guess to the server using fetch
-    const SERVER_URL = 'http://13.58.95.29:5000';  // AWS EC2 instance I've set up
+    const SERVER_URL = 'http://3.138.247.183:5000';  // AWS EC2 instance I've set up
 
 guessButton.addEventListener("click", () => {
     const guess = guessInput.value;

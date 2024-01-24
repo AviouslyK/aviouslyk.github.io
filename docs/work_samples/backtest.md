@@ -8,4 +8,12 @@ Trading only SPY, here you buy whenever the 50 day moving average crosses above 
 
 <img width="550" src="../images/spy.png">
 
-[Source](https://github.com/AviouslyK/backtest)
+The [Source](https://github.com/AviouslyK/backtest) for the above.
+
+## Simple Mac App
+
+I also implemented a related idea in the form of a Mac application that deploys a few simple trading strategies, and then gives suggestions on what tickers to buy.
+
+<img width="550" src="../images/buyIndicator.png">
+
+The source for this can be found [here](https://github.com/AviouslyK/BuyTheDip/tree/main)

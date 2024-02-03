@@ -3,13 +3,13 @@ from flask_cors import CORS
 from word_correlator import WordCorrelator  # Import existing WordCorrelator class
 
 app = Flask(__name__)
-CORS(app) # allow requests from github website domain to access resources from this server
+CORS(app, origins="https://aviouslyk.github.io")# allow requests from github website domain to access resources from this server
 correlator = WordCorrelator()  # Initialize the WordCorrelator instance
 
 @app.route('/')
 def index():
     return "Welcome to the Word Guessing App!"
-    
+
 @app.route('/process_guess', methods=['POST'])
 def process_guess():
     data = request.get_json()  # Get the JSON data from the request

@@ -14,7 +14,8 @@ def index():
 def process_guess():
     data = request.get_json()  # Get the JSON data from the request
     guess = data.get('guess')  # Extract the user's guess
-
+    app.logger.info(f"Received guess: {guess}")
+    
     # Calculate similarity score using WordCorrelator class
     similarity_score = correlator.calculate_similarity_score(guess)
 

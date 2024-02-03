@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from word_correlator import WordCorrelator  # Import existing WordCorrelator class
+from game import main  # Import the main function from game.py
 
 app = Flask(__name__)
 CORS(app, origins="https://aviouslyk.github.io")# allow requests from github website domain to access resources from this server
@@ -9,6 +10,13 @@ correlator = WordCorrelator()  # Initialize the WordCorrelator instance
 @app.route('/')
 def index():
     return "Welcome to the Word Guessing App!"
+
+@app.route('/start_game', methods=['POST'])
+def start_game():
+    print("Starting the game...")    
+    main() # Call the main function from game.py
+
+    return jsonify({'message': 'Game started successfully'})
 
 @app.route('/process_guess', methods=['POST'])
 def process_guess():
